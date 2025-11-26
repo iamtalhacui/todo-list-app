@@ -126,7 +126,7 @@ const MainBoard = () => {
         </div>
       </div>
 
-      <div className='flex flex-col md:flex-row gap-5 w-full justify-center items-start'>
+      <div className='flex flex-col md:flex-row gap-5 w-full justify-center md:items-start items-center'>
         <Column 
           title='To Do' 
           color='bg-red-500' 

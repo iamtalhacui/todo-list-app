@@ -5,7 +5,7 @@ import Navbar from "./components/Navbar.jsx";
 
 const App = () => {
   return (
-    <div className="w-full h-screen overflow-hidden">
+    <div className="w-full md:h-screen h-auto overflow-hidden">
      
       <Navbar/>
       <MainBoard />
