@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Column from './Column';
 import axios from 'axios';
 
-const API_URL = 'http://localhost:8000/tasks';
+const API_URL = 'https://grantify-kanban-production.up.railway.app/tasks';
 
 const MainBoard = () => {
   const [taskText, setTaskText] = useState("");
