@@ -1,93 +1,55 @@
 import React, { useState, useEffect } from 'react';
 import Column from './Column';
-import axios from 'axios';
-
-const API_URL = 'https://grantify-kanban-production.up.railway.app/tasks';
 
 const MainBoard = () => {
   const [taskText, setTaskText] = useState("");
   const [taskStatus, setTaskStatus] = useState("To Do");
   const [tasks, setTasks] = useState([]);
 
+  // Load tasks from Local Storage on mount
   useEffect(() => {
-    fetchTasks();
+    const storedTasks = localStorage.getItem("kanbanTasks");
+    if (storedTasks) {
+      setTasks(JSON.parse(storedTasks));
+    }
   }, []);
 
-  const fetchTasks = async () => {
-    try {
-      const response = await axios.get(API_URL);
-      const fetchedTasks = response.data.tasks || response.data;
-      setTasks(Array.isArray(fetchedTasks) ? fetchedTasks : []);
-    } catch (err) {
-      console.error("Error fetching tasks:", err);
-      setTasks([]);
-    }
-  };
+  // Save tasks to Local Storage whenever tasks change
+  useEffect(() => {
+    localStorage.setItem("kanbanTasks", JSON.stringify(tasks));
+  }, [tasks]);
 
-  const addTask = async () => {
+  const addTask = () => {
     if (!taskText.trim()) return;
 
-    try {
-      const newTaskPayload = {
-        task: taskText,
-        status: taskStatus,
-      };
+    const newTask = {
+      _id: Date.now().toString(), // generate unique ID
+      task: taskText,
+      status: taskStatus,
+    };
 
-      const response = await axios.post(API_URL, newTaskPayload);
-      
-      
-      const newTask = response.data.task || response.data;
-      
-      setTasks((prev) => [...prev, newTask]);
-      setTaskText("");
-    } catch (err) {
-      console.error("Error adding task:", err);
-      alert("Failed to add task");
-    }
+    setTasks((prev) => [...prev, newTask]);
+    setTaskText("");
   };
 
-  const deleteTask = async (id) => {
-    try {
-      await axios.delete(`${API_URL}/${id}`);
-      setTasks((prev) => prev.filter(task => task._id !== id));
-    } catch (err) {
-      console.error("Error deleting task:", err);
-      alert("Failed to delete task");
-    }
+  const deleteTask = (id) => {
+    setTasks((prev) => prev.filter(task => task._id !== id));
   };
 
-  const editTask = async (id, newText) => {
-    try {
-      const taskToUpdate = tasks.find(task => task._id === id);
-      if (!taskToUpdate) return;
-
-      const updatedTask = { ...taskToUpdate, task: newText };
-      
-      await axios.put(`${API_URL}/${id}`, updatedTask);
-
-      setTasks((prev) => prev.map(task =>
+  const editTask = (id, newText) => {
+    setTasks((prev) =>
+      prev.map(task =>
         task._id === id ? { ...task, task: newText } : task
-      ));
-    } catch (err) {
-      console.error("Error updating task text:", err);
-    }
+      )
+    );
   };
 
-  const updateTaskStatus = async (id, newStatus) => {
-    try {
-      const taskToUpdate = tasks.find(task => task._id === id);
-      if (!taskToUpdate) return;
-
-      const updatedTask = { ...taskToUpdate, status: newStatus };
-
-      await axios.put(`${API_URL}/${id}`, updatedTask);
-
-      setTasks((prev) => prev.map(task =>
+  const updateTaskStatus = (id, newStatus) => {
+    setTasks((prev) =>
+      prev.map(task =>
         task._id === id ? { ...task, status: newStatus } : task
-      ));
-    } catch (err) {
-      console.error("Error moving task:", err);
-    }
+      )
+    );
   };
 
   return (
