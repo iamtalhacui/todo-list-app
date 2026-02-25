@@ -1,74 +1,121 @@
-import React from 'react';
-import { Trash, Edit } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import Column from './Column';
 
-const Column = ({ color, title, tasks, deleteTask, editTask, updateTaskStatus }) => {
-  
+const MainBoard = () => {
+  const [taskText, setTaskText] = useState("");
+  const [taskStatus, setTaskStatus] = useState("To Do");
+  const [tasks, setTasks] = useState([]);
+
  
- const safeTasks = Array.isArray(tasks) ? tasks : [];
-  
-  const filteredTasks = safeTasks.filter(task => task.status === title);
-
-  const handleEdit = (task) => {
-   
-    const newText = prompt("Edit task:", task.task);
-    if (newText !== null && newText.trim() !== "") {
-      editTask(task._id, newText);
+  useEffect(() => {
+    const storedTasks = localStorage.getItem("kanbanTasks");
+    if (storedTasks) {
+      setTasks(JSON.parse(storedTasks));
     }
+  }, []);
+
+ 
+  useEffect(() => {
+    localStorage.setItem("kanbanTasks", JSON.stringify(tasks));
+  }, [tasks]);
+
+  const addTask = () => {
+    if (!taskText.trim()) return;
+
+    const newTask = {
+      _id: Date.now().toString(), 
+      task: taskText,
+      status: taskStatus,
+    };
+
+    setTasks((prev) => [...prev, newTask]);
+    setTaskText("");
   };
 
-  const handleDrop = (e) => {
-    e.preventDefault();
-    const taskId = e.dataTransfer.getData("taskId");
-    updateTaskStatus(taskId, title);
+  const deleteTask = (id) => {
+    setTasks((prev) => prev.filter(task => task._id !== id));
+  };
+
+  const editTask = (id, newText) => {
+    setTasks((prev) =>
+      prev.map(task =>
+        task._id === id ? { ...task, task: newText } : task
+      )
+    );
+  };
+
+  const updateTaskStatus = (id, newStatus) => {
+    setTasks((prev) =>
+      prev.map(task =>
+        task._id === id ? { ...task, status: newStatus } : task
+      )
+    );
   };
 
   return (
-    <div 
-      className='rounded-2xl bg-gray-100 w-72 shadow-md flex flex-col' 
-      onDragOver={(e) => e.preventDefault()} 
-      onDrop={handleDrop}
-    >
-        
-      <h1 className={`${color} rounded-t-2xl text-center text-lg font-bold text-white py-3 shadow-sm`}>
-        {title}
-      </h1>
-          
-      <div className='p-3 flex flex-col gap-3 min-h-[200px]'> 
-       
-        
-        {filteredTasks.length === 0 && (
-          <p className='text-gray-400 text-sm italic text-center mt-5'>No tasks</p>
-        )}
+    <div className='mt-10 container mx-auto px-4'>
+      <div className='flex flex-col gap-3 justify-center items-center'>
+        <h1 className='text-4xl font-bold text-center mt-10'>
+          Welcome, to <span className='text-green-600'>Grantify Kanban Board</span>
+        </h1>
 
-        {filteredTasks.map(task => (
-          <div 
-            key={task._id} 
-            className='bg-white rounded-lg p-3 shadow-sm border border-gray-200 flex justify-between items-center cursor-grab active:cursor-grabbing hover:shadow-md transition-shadow'
-            draggable={true}                     
-            onDragStart={(e) => e.dataTransfer.setData("taskId", task._id)} 
+        <div className='flex flex-col sm:flex-row gap-2 bg-gray-200 p-2 rounded-md mt-3 mb-10 shadow-sm'>
+          <input
+            type="text"
+            className='p-2 px-3 text-md outline-none rounded-sm w-full sm:w-64'
+            placeholder='Write task here...'
+            value={taskText}
+            onChange={(e) => setTaskText(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && addTask()}
+          />
+
+          <select
+            className='h-10 px-2 outline-none rounded-sm bg-white cursor-pointer'
+            value={taskStatus}
+            onChange={(e) => setTaskStatus(e.target.value)}
           >
-            
-          
-            <span className="text-gray-700 font-medium break-all">{task.task}</span>
+            <option value="To Do">To Do</option>
+            <option value="In Progress">In Progress</option>
+            <option value="Done">Done</option>
+          </select>
 
-            <div className='flex gap-2 ml-2'>
-              <Edit 
-                size={20} 
-                className='text-green-500 hover:text-green-600 hover:scale-110 transition-transform cursor-pointer' 
-                onClick={() => handleEdit(task)}
-              />
-              <Trash 
-                size={20} 
-                className='text-red-500 hover:text-red-600 hover:scale-110 transition-transform cursor-pointer' 
-                onClick={() => deleteTask(task._id)} // CRITICAL: Use _id
-              />
-            </div>
-           
-          </div>
-        ))}
+          <button
+            className='bg-green-500 hover:bg-green-600 transition-colors font-semibold p-2 rounded-sm outline-none text-white px-6'
+            onClick={addTask}
+          >
+            Add Task
+          </button>
+        </div>
+      </div>
+
+      <div className='flex flex-col md:flex-row gap-5 w-full justify-center md:items-start items-center'>
+        <Column 
+          title='To Do' 
+          color='bg-red-500' 
+          tasks={tasks} 
+          deleteTask={deleteTask} 
+          editTask={editTask} 
+          updateTaskStatus={updateTaskStatus} 
+        />
+        <Column 
+          title='In Progress' 
+          color='bg-yellow-500' 
+          tasks={tasks} 
+          deleteTask={deleteTask} 
+          editTask={editTask} 
+          updateTaskStatus={updateTaskStatus} 
+        />
+        <Column 
+          title='Done' 
+          color='bg-green-500' 
+          tasks={tasks} 
+          deleteTask={deleteTask} 
+          editTask={editTask} 
+          updateTaskStatus={updateTaskStatus} 
+        />
       </div>
     </div>
   )
 }
 
-export default Column;
+export default MainBoard;
