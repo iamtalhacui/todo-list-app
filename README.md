@@ -45,7 +45,8 @@ The goal of this project was to:
 
 ## 📸 Preview
 
-(Add screenshots here if desired)
+<img width="1382" height="611" alt="Screenshot 2026-02-25 at 7 17 45 AM" src="https://github.com/user-attachments/assets/2d7a613c-0228-4934-af89-14948b67364c" />
+
 
 ---
 
