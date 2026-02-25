@@ -56,7 +56,7 @@ const MainBoard = () => {
     <div className='mt-10 container mx-auto px-4'>
       <div className='flex flex-col gap-3 justify-center items-center'>
         <h1 className='text-4xl font-bold text-center mt-10'>
-          Welcome, to <span className='text-green-600'>Grantify Kanban Board</span>
+          Welcome, to <span className='text-green-600'>TODO LIST APP</span>
         </h1>
 
         <div className='flex flex-col sm:flex-row gap-2 bg-gray-200 p-2 rounded-md mt-3 mb-10 shadow-sm'>
