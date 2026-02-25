@@ -52,7 +52,7 @@ The goal of this project was to:
 
 ## 👨‍💻 Author
 
-**Your Name**  
-GitHub: https://github.com/iamtalhacui
-LinkedIn: https://www.linkedin.com/in/m-talha-mern/
+**Muhammad Talha**  
+GitHub: [Visit my Github](https://github.com/iamtalhacui)
+LinkedIn: [Visit my LinkedIn](https://www.linkedin.com/in/m-talha-mern/)
 ---
